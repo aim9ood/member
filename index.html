@@ -63,61 +63,75 @@
 <body>
     <div id="slideshow">
         <div class="slide active">
-            <video src="video1.mp4" muted loop></video>
+            <video src="video1.mp4" muted loop playsinline></video>
         </div>
         <div class="slide">
-            <video src="video2.mp4" muted loop></video>
+            <video src="video2.mp4" muted loop playsinline></video>
         </div>
         <div class="slide">
-            <video src="video3.mp4" muted loop></video>
+            <video src="video3.mp4" muted loop playsinline></video>
         </div>
         <div class="slide">
-            <video src="video4.mp4" muted loop></video>
+            <video src="video4.mp4" muted loop playsinline></video>
         </div>
         <div class="slide">
-            <video src="video5.mp4" muted loop></video>
+            <video src="video5.mp4" muted loop playsinline></video>
         </div>
         <a href="#" class="nav-button" id="prev">&lt;</a>
         <a href="#" class="nav-button" id="next">&gt;</a>
     </div>
 
     <script>
-         const slides = document.querySelectorAll('.slide');
-         const videos = document.querySelectorAll('.slide video'); 
-         const prevButton = document.getElementById('prev');
-         const nextButton = document.getElementById('next');
-         let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+const videos = document.querySelectorAll('.slide video');
+const prevButton = document.getElementById('prev');
+const nextButton = document.getElementById('next');
+let currentSlide = 0;
 
-     function showSlide(n) {
-        slides[currentSlide].classList.remove('active');
-        videos[currentSlide].pause();
-        currentSlide = (n + slides.length) % slides.length;
-        slides[currentSlide].classList.add('active');
-        videos[currentSlide].play();
-        }
+function showSlide(n) {
+    slides[currentSlide].classList.remove('active');
+    videos[currentSlide].pause();
+    currentSlide = (n + slides.length) % slides.length;
+    slides[currentSlide].classList.add('active');
+    playVideo(currentSlide);
+}
 
-     function nextSlide() {
-        showSlide(currentSlide + 1);
-        }
+function playVideo(index) {
+    const video = videos[index];
+    video.currentTime = 0;
+    var playPromise = video.play();
+    if (playPromise !== undefined) {
+        playPromise.then(_ => {
+            // 자동 재생 시작
+        })
+        .catch(error => {
+            // 자동 재생 실패
+            console.log("자동 재생 실패:", error);
+        });
+    }
+}
 
-     function prevSlide() {
-        showSlide(currentSlide - 1);
-        }
+function nextSlide() {
+    showSlide(currentSlide + 1);
+}
 
-    prevButton.addEventListener('click', prevSlide);
-    nextButton.addEventListener('click', nextSlide);
+function prevSlide() {
+    showSlide(currentSlide - 1);
+}
 
-// 초기 비디오 재생
-    videos[currentSlide].play();
+prevButton.addEventListener('click', prevSlide);
+nextButton.addEventListener('click', nextSlide);
 
-    setInterval(nextSlide, 60000); // 1분마다 자동 전환
-
-// 페이지 로드 시 모든 비디오를 미리 로드
-    window.addEventListener('load', () => {
-        videos.forEach(video => {
-            video.load();
-      });
+// 페이지 로드 시 초기화
+window.addEventListener('load', () => {
+    videos.forEach(video => {
+        video.load();
     });
+    playVideo(currentSlide);
+});
+
+// 1분마다 자동 전환
+setInterval(nextSlide, 60000);
     </script>
 </body>
 </html>
